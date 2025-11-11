@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}User History - Guestbook App{% endblock %}
+
+{% block content %}
+<div class="history-header">
+    <h1>User Activity History</h1>
+    <p>Track all user activities on the guestbook</p>
+</div>
+
+<div class="history-container">
+    <div class="history-stats">
+        <p>Showing last {{ history|length }} events</p>
+    </div>
+
+    <div class="history-list">
+        {% if history %}
+            {% for event in history|reverse %}
+            <div class="history-item history-{{ event.action|lower }}">
+                <div class="history-icon">
+                    {% if event.action == 'PAGE_VISIT' %}👀
+                    {% elif event.action == 'NEW_ENTRY' %}📝
+                    {% elif event.action == 'DELETE_ENTRY' %}🗑️
+                    {% elif event.action == 'ERROR' %}❌
+                    {% else %}🔍{% endif %}
+                </div>
+                <div class="history-details">
+                    <div class="history-action">{{ event.action }}</div>
+                    <div class="history-info">{{ event.details }}</div>
+                    <div class="history-meta">
+                        <span class="history-time">{{ event.timestamp }}</span>
+                        <span class="history-ip">IP: {{ event.ip_address }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-history">
+                <p>No history recorded yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

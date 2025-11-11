@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Thank You for Your Feedback{% endblock %}
+
+{% block content %}
+<div class="thank-you-container">
+    <div class="thank-you-card">
+        <div class="thank-you-icon">✅</div>
+        <h1>Thank You for Your Feedback!</h1>
+        <p class="thank-you-message">
+            We appreciate you taking the time to share your thoughts with us. 
+            Your feedback has been received and will be reviewed by our team.
+        </p>
+        
+        {% if feedback_id %}
+        <div class="feedback-reference">
+            <p><strong>Reference ID:</strong> #{{ feedback_id }}</p>
+            <small>You can use this ID if you need to reference your feedback later.</small>
+        </div>
+        {% endif %}
+
+        <div class="next-steps">
+            <h3>What happens next?</h3>
+            <ul>
+                <li>We'll review your feedback within 24-48 hours</li>
+                <li>If you provided an email, we may contact you for more information</li>
+                <li>Your suggestions will be considered for future improvements</li>
+                <li>Bug reports will be prioritized based on severity</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Return to Home</a>
+            <a href="{{ url_for('feedback') }}" class="btn btn-secondary">Submit More Feedback</a>
+            <a href="{{ url_for('guestbook') }}" class="btn btn-outline">View Guestbook</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

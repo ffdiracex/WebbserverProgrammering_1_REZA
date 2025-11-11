@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Guestbook - Sign Now!{% endblock %}
+
+{% block content %}
+<div class="guestbook-header">
+    <h1>Guestbook</h1>
+    <p>Leave your message for our community!</p>
+</div>
+
+<div class="guestbook-container">
+    <!-- Add Entry Form -->
+    <div class="add-entry-form">
+        <h2>Add Your Entry</h2>
+        <form method="POST" action="{{ url_for('guestbook') }}" class="entry-form">
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" name="name" required maxlength="50" placeholder="Your name">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email (optional)</label>
+                <input type="email" id="email" name="email" maxlength="100" placeholder="your.email@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message *</label>
+                <textarea id="message" name="message" required maxlength="500" 
+                         placeholder="Write your message here..." rows="4"></textarea>
+                <div class="char-count"><span id="char-count">0</span>/500 characters</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Sign Guestbook</button>
+        </form>
+    </div>
+
+    <!-- Entries List -->
+    <div class="entries-list">
+        <h2>Recent Entries ({{ entries|length }} total)</h2>
+        
+        {% if entries %}
+            {% for entry in entries|reverse %}
+            <div class="entry-card">
+                <div class="entry-header">
+                    <h3>{{ entry.name }}</h3>
+                    <span class="entry-date">{{ entry.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+                {% if entry.email %}
+                <p class="entry-email">{{ entry.email }}</p>
+                {% endif %}
+                <p class="entry-message">{{ entry.message }}</p>
+                <div class="entry-footer">
+                    <small>IP: {{ entry.ip_address }}</small>
+                    <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}" 
+                          class="delete-form" onsubmit="return confirm('Delete this entry?');">
+                        <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-entries">
+                <p>No entries yet. Be the first to sign our guestbook!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

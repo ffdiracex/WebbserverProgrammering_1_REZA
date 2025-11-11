@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Statistics - Guestbook App{% endblock %}
+
+{% block content %}
+<div class="stats-header">
+    <h1>Guestbook Statistics</h1>
+    <p>Interesting insights about our guestbook activity</p>
+</div>
+
+<div class="stats-grid detailed">
+    <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <h3>{{ stats.total_entries }}</h3>
+        <p>Total Guestbook Entries</p>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <h3>{{ stats.unique_visitors }}</h3>
+        <p>Unique Visitors</p>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <h3>{{ stats.total_history_events }}</h3>
+        <p>Total History Events</p>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">👀</div>
+        <h3>{{ stats.page_visits }}</h3>
+        <p>Page Visits</p>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">✍️</div>
+        <h3>{{ stats.guestbook_entries }}</h3>
+        <p>Guestbook Signatures</p>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <h3>{{ stats.first_entry_date }}</h3>
+        <p>First Entry Date</p>
+    </div>
+</div>
+
+<div class="api-links">
+    <h2>API Endpoints</h2>
+    <div class="api-buttons">
+        <a href="{{ url_for('api_guestbook') }}" class="btn btn-secondary" target="_blank">Guestbook JSON API</a>
+        <a href="{{ url_for('api_history') }}" class="btn btn-secondary" target="_blank">History JSON API</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Guestbook App{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to Our Guestbook</h1>
+    <p class="subtitle">Leave your mark and be part of our community history!</p>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>{{ total_entries }}</h3>
+            <p>Total Signatures</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_visits }}</h3>
+            <p>Page Visits</p>
+        </div>
+    </div>
+
+    <div class="cta-buttons">
+        <a href="{{ url_for('guestbook') }}" class="btn btn-primary">Sign Guestbook</a>
+        <a href="{{ url_for('view_history') }}" class="btn btn-secondary">View History</a>
+    </div>
+</div>
+
+<div class="features">
+    <div class="feature">
+        <h3>📝 Sign Our Guestbook</h3>
+        <p>Leave a message for others to see and be part of our growing community.</p>
+    </div>
+    <div class="feature">
+        <h3>📊 View Statistics</h3>
+        <p>Check out interesting stats about our visitors and their activity.</p>
+    </div>
+    <div class="feature">
+        <h3>🕐 Track History</h3>
+        <p>See the complete history of user activity on our platform.</p>
+    </div>
+</div>
+{% endblock %}

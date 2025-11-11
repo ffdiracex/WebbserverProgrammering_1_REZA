@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback Admin Panel{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Feedback Administration</h1>
+    <p>Manage and review user feedback submissions</p>
+</div>
+
+<div class="admin-container">
+    <!-- Statistics Overview -->
+    <div class="admin-stats">
+        <div class="stat-card">
+            <h3>{{ stats.total_feedback }}</h3>
+            <p>Total Feedback</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ stats.unresolved_count }}</h3>
+            <p>Unresolved</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ stats.critical_count }}</h3>
+            <p>Critical</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ stats.response_rate }}%</h3>
+            <p>Response Rate</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="admin-filters">
+        <form method="GET" class="filter-form">
+            <div class="filter-group">
+                <label for="status">Status:</label>
+                <select id="status" name="status">
+                    <option value="all" {% if filters.status == 'all' %}selected{% endif %}>All Statuses</option>
+                    <option value="new" {% if filters.status == 'new' %}selected{% endif %}>New</option>
+                    <option value="reviewed" {% if filters.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                    <option value="in_progress" {% if filters.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="resolved" {% if filters.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                    <option value="closed" {% if filters.status == 'closed' %}selected{% endif %}>Closed</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="type">Type:</label>
+                <select id="type" name="type">
+                    <option value="all" {% if filters.type == 'all' %}selected{% endif %}>All Types</option>
+                    <option value="general" {% if filters.type == 'general' %}selected{% endif %}>General</option>
+                    <option value="bug" {% if filters.type == 'bug' %}selected{% endif %}>Bug Report</option>
+                    <option value="feature" {% if filters.type == 'feature' %}selected{% endif %}>Feature Request</option>
+                    <option value="suggestion" {% if filters.type == 'suggestion' %}selected{% endif %}>Suggestion</option>
+                    <option value="complaint" {% if filters.type == 'complaint' %}selected{% endif %}>Complaint</option>
+                    <option value="praise" {% if filters.type == 'praise' %}selected{% endif %}>Praise</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="priority">Priority:</label>
+                <select id="priority" name="priority">
+                    <option value="all" {% if filters.priority == 'all' %}selected{% endif %}>All Priorities</option>
+                    <option value="low" {% if filters.priority == 'low' %}selected{% endif %}>Low</option>
+                    <option value="medium" {% if filters.priority == 'medium' %}selected{% endif %}>Medium</option>
+                    <option value="high" {% if filters.priority == 'high' %}selected{% endif %}>High</option>
+                    <option value="critical" {% if filters.priority == 'critical' %}selected{% endif %}>Critical</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <a href="{{ url_for('feedback_admin') }}" class="btn btn-secondary">Clear Filters</a>
+        </form>
+    </div>
+
+    <!-- Feedback List -->
+    <div class="feedback-list">
+        {% if feedback_entries %}
+            {% for feedback in feedback_entries %}
+            <div class="feedback-item feedback-{{ feedback.priority }}">
+                <div class="feedback-header">
+                    <div class="feedback-meta">
+                        <span class="feedback-id">#{{ feedback.id }}</span>
+                        <span class="feedback-type badge badge-{{ feedback.feedback_type }}">{{ feedback.feedback_type }}</span>
+                        <span class="feedback-priority badge badge-{{ feedback.priority }}">{{ feedback.priority }}</span>
+                        <span class="feedback-status badge badge-{{ feedback.status }}">{{ feedback.status }}</span>
+                    </div>
+                    <div class="feedback-date">
+                        {{ feedback.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                    </div>
+                </div>
+
+                <div class="feedback-content">
+                    <h3 class="feedback-subject">{{ feedback.subject }}</h3>
+                    <div class="feedback-user">
+                        <strong>{{ feedback.name }}</strong>
+                        {% if feedback.email %}
+                        <span class="feedback-email">&lt;{{ feedback.email }}&gt;</span>
+                        {% endif %}
+                    </div>
+                    <p class="feedback-message">{{ feedback.message }}</p>
+                </div>
+
+                {% if feedback.admin_notes %}
+                <div class="feedback-admin-notes">
+                    <strong>Admin Notes:</strong>
+                    <p>{{ feedback.admin_notes }}</p>
+                </div>
+                {% endif %}
+
+                <div class="feedback-actions">
+                    <form method="POST" action="{{ url_for('update_feedback_status', feedback_id=feedback.id) }}" class="inline-form">
+                        <select name="status" class="status-select" onchange="this.form.submit()">
+                            <option value="new" {% if feedback.status == 'new' %}selected{% endif %}>New</option>
+                            <option value="reviewed" {% if feedback.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                            <option value="in_progress" {% if feedback.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                            <option value="resolved" {% if feedback.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                            <option value="closed" {% if feedback.status == 'closed' %}selected{% endif %}>Closed</option>
+                        </select>
+                    </form>
+
+                    <form method="POST" action="{{ url_for('update_feedback_status', feedback_id=feedback.id) }}" class="inline-form">
+                        <select name="priority" class="priority-select" onchange="this.form.submit()">
+                            <option value="low" {% if feedback.priority == 'low' %}selected{% endif %}>Low</option>
+                            <option value="medium" {% if feedback.priority == 'medium' %}selected{% endif %}>Medium</option>
+                            <option value="high" {% if feedback.priority == 'high' %}selected{% endif %}>High</option>
+                            <option value="critical" {% if feedback.priority == 'critical' %}selected{% endif %}>Critical</option>
+                        </select>
+                    </form>
+
+                    <button class="btn btn-small btn-outline" onclick="showNotesModal({{ feedback.id }}, '{{ feedback.admin_notes }}')">
+                        Add Notes
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-feedback">
+                <p>No feedback found matching your criteria.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Notes Modal -->
+<div id="notesModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Add Admin Notes</h3>
+        <form id="notesForm" method="POST">
+            <input type="hidden" id="notesFeedbackId" name="feedback_id">
+            <div class="form-group">
+                <label for="admin_notes">Notes:</label>
+                <textarea id="admin_notes" name="admin_notes" rows="4" placeholder="Add internal notes about this feedback..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Notes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showNotesModal(feedbackId, currentNotes) {
+    document.getElementById('notesFeedbackId').value = feedbackId;
+    document.getElementById('admin_notes').value = currentNotes || '';
+    document.getElementById('notesModal').style.display = 'block';
+}
+
+// Close modal when clicking X
+document.querySelector('.close').addEventListener('click', function() {
+    document.getElementById('notesModal').style.display = 'none';
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('notesModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+// Handle notes form submission
+document.getElementById('notesForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const feedbackId = formData.get('feedback_id');
+    
+    fetch(`/feedback/admin/update/${feedbackId}`, {
+        method: 'POST',
+        body: formData
+    }).then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              location.reload();
+          } else {
+              alert('Error saving notes: ' + data.message);
+          }
+      });
+});
+</script>
+{% endblock %}
